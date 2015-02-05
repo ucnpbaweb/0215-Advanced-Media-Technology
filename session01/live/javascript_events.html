@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>JavaScript - Events</title>
+		<script type="text/javascript">
+			var header;
+
+			function changeBackgroundColor(color){
+				header.style.backgroundColor = color;
+			}
+
+			function changeToRed(){
+				header.style.backgroundColor = 'red';
+			}
+
+			window.addEventListener('load', function(){
+				header = document.getElementById('header');
+				header.addEventListener('click', changeToRed, false);
+			}, false);
+		</script>
+	</head>
+	<body>
+		<h1 id="header">JavaScript - Events</h1>
+	</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>JavaScript - Basic</title>
+		<script type="text/javascript">
+			console.log('script tag in head');
+			console.log(document.getElementById('header'));
+		</script>
+	</head>
+	<body onload="console.log('onload on body');console.log(document.getElementById('header'));">
+		<h1 id="header">JavaScript - basic</h1>
+		<script type="text/javascript">
+			console.log('script tag in body');
+			console.log(document.getElementById('header'));
+		</script>
+	</body>
+</html>
