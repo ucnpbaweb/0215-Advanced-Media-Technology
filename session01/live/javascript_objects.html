@@ -3,8 +3,53 @@
 	<head>
 		<title>JavaScript - Objects</title>
 		<meta charset="utf-8"/>
+		<script type="text/javascript">
+			var num = 12;
+			var str = 'Hello';
+			var bool = true;
+			var arr = ['a','b','c'];
+			arr.push('d');
+
+			var p1 = {};
+			p1.fName = 'Christian';
+			p1.lName = 'Wahl';
+
+			var p2 = {};
+			p2.fName = 'Ib';
+			p2.lName = 'Nielsen';
+
+			function fullName(personOjb){
+				return personOjb.fName + ' ' + personOjb.lName;
+			}
+
+
+			function Person(fName, lName){
+				this.fName = fName;
+				this.lName = lName;
+
+				this.fullName = function(){
+					return this.fName + ' ' + this.lName;
+				};
+			}
+			var persons = [];
+			persons.push(new Person('Christian', 'Wahl'));
+			persons.push(new Person('Ib', 'Nielsen'));
+			persons.push(new Person('Per', 'Olsen'));
+			
+			var personsList;
+			window.addEventListener('load', function(){
+				personsList = document.getElementById('personsList');
+				for(var i = 0; i < persons.length; i++){
+					var person = persons[i];
+					personsList.innerHTML += '<li>' + person.fullName() + '</li>';
+				}
+			}, false);
+
+		</script>
 	</head>
 	<body>
+		<ul id="personsList">
 
+		</ul>
 	</body>
 </html>
