@@ -8,7 +8,7 @@
 			//velocity = px pr sec
 			var Disc = function(position, color){
 				this.color = color;
-				this.radius = 40;
+				this.radius = 50;
 				this.position = {'x' : position.x, 'y' : position.y};
 				this.velocity = {'x' : 0, 'y' : 0};
 			};
@@ -27,13 +27,13 @@
 				this.position.y += this.velocity.y*timediff/1000;
 
 				if(this.position.x + this.radius > canvas.width){
-					this.position.x = canvas.width-this.radius-(this.position.x + this.radius - canvas.width)*2;
+					this.position.x = canvas.width-this.radius-(this.position.x + this.radius - canvas.width);
 					
 					this.velocity.x = this.velocity.x*-1;
 				}
 
 				if(this.position.x - this.radius < 0){
-					this.position.x = this.radius-(this.position.x - this.radius)*2;
+					this.position.x = this.radius-(this.position.x - this.radius);
 					this.velocity.x = this.velocity.x * -1;
 				}
 
