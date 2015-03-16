@@ -56,7 +56,8 @@
 				li.innerHTML = item.title;
 				li.addEventListener('keyup', function(e){
 					//oninput is not working in IE
-					Pubsub.publish('updateitem', [parseInt(e.target.getAttribute('data-id')), e.target.contentText]);
+					console.debug(e);
+					Pubsub.publish('updateitem', [parseInt(e.target.getAttribute('data-id')), e.target.textContent]);
 				}, false);
 				list.appendChild(li);
 			};
