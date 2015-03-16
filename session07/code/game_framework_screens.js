@@ -41,7 +41,6 @@ discs.screens.mainmenu = (function(){
 		document.forms.mainmenu.addEventListener('submit', function(e){
 			e.preventDefault();
 			discs.game.showScreen(e.explicitOriginalTarget.name);
-			console.debug(e.explicitOriginalTarget.name);
 		});
 	};
 
