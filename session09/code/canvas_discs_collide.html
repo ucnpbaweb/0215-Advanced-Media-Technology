@@ -10,11 +10,13 @@
 			var Box = function(position, size){
 				this.position = {'x' : position.x, 'y' : position.y};
 				this.size = {'width' : size.width, 'height' : size.height};
+				this.color = 'black';
 			};
 
 			Box.prototype.render = function(){
-				ctx.fillStyle = 'black';
+				ctx.fillStyle = this.color;
 				ctx.fillRect(this.position.x, this.position.y, this.size.width, this.size.height);
+				this.color = 'black';
 			};
 
 			var Disc = function(position, color){
@@ -59,12 +61,30 @@
 
 				//boxes
 				boxes.forEach(function(box){
-					console.debug(this);
-					if(box.position.x < this.position.y + this.radius &&
-						box.position.x+box.size.height > this.position.y + this.radius){
+					if(box.position.y < this.position.y+this.radius &&
+						box.position.y+box.size.height > this.position.y-this.radius &&
+						box.position.x < this.position.x+this.radius &&
+						box.position.x+box.size.width > this.position.x-this.radius){
+						/*
+						if(box.position.x > this.position.x){
+							this.velocity.x = this.velocity.x * -1;
+							this.position.x = box.position.x-this.radius;
+						} else if(box.position.x+box.size.width < this.position.x){
+							this.velocity.x = this.velocity.x * -1;
+							this.position.x = box.position.x+box.size.width+this.radius;
+						}
+
+						if(box.position.y > this.position.y){
+							this.velocity.y = this.velocity.y*-1;
+							this.position.y = box.position.y-this.radius;
+						} else if(box.position.y+box.size.height < this.position.y){
+							this.velocity.y = this.velocity.y*-1;
+							this.position.y = box.position.y+box.size.height+this.radius;
+						}*/
 						console.debug('hit');
+						box.color = 'orange';
 					}
-				});
+				}, this);
 			};
 
 			Disc.prototype.render = function(){
@@ -109,17 +129,17 @@
 				canvas = document.getElementById('canvas');
 				ctx = canvas.getContext('2d');
 
-				discs.push(new Disc({'x' : 400, 'y' : 300}, 'red'));
-				discs.push(new Disc({'x' : 100, 'y' : 200}, 'green'));
-				discs.push(new Disc({'x' : 50, 'y' : 500}, 'blue'));
-				discs[0].velocity.x = 200;
-				discs[0].velocity.y = 0;
-				discs[1].velocity.x = 75;
-				discs[1].velocity.y = -84;
-				discs[2].velocity.x = 25;
-				discs[2].velocity.y = -100;
+				discs.push(new Disc({'x' : 10, 'y' : 200}, 'red'));
+				//discs.push(new Disc({'x' : 100, 'y' : 200}, 'green'));
+				//discs.push(new Disc({'x' : 50, 'y' : 500}, 'blue'));
+				discs[0].velocity.x = 400;
+				discs[0].velocity.y = 200;
+				//discs[1].velocity.x = 75;
+				//discs[1].velocity.y = -84;
+				//discs[2].velocity.x = 25;
+				//discs[2].velocity.y = -100;
 
-				boxes.push(new Box({'x' : 300, 'y' : 200}, {'width' : 100, 'height' : 50}));
+				boxes.push(new Box({'x' : 300, 'y' : 200}, {'width' : 340, 'height' : 200}));
 
 				requestAnimationFrame(animate);
 
@@ -128,6 +148,6 @@
 	</head>
 	<body>
 		<h1>Canvas - discs</h1>
-		<canvas id="canvas" width="800" height="600"></canvas>
+		<canvas id="canvas" width="800" height="600" style="border: 1px solid black;"></canvas>
 	</body>
 </html>

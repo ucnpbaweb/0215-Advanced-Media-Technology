@@ -112,7 +112,7 @@
 				speed = document.getElementById('speed');
 
 				canvas.addEventListener('click', function(){
-					items[0].moveit(200, 2000, easeInOut(), 'position.x');
+					items[0].moveit(200, 2000, linear(), 'position.x');
 				}, false);
 
 				items.push(new Ball({'x' : 50, 'y' : 50}, 'red', 20));
