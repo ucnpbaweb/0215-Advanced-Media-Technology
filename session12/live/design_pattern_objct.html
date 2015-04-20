@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Design Pattern Object</title>
+		<meta charset="utf-8">
+		<script type="text/javascript">
+			
+			var User1 = function(name){
+				this.name = name;
+
+				this.GetName = function(){
+					return this.name;
+				};
+			};
+
+			var u1 = new User1('Ib');
+
+			var User2 = function(name){
+				this.name = name;
+			};
+
+			User2.prototype.GetName = function(){
+				return this.name;
+			};
+
+			var GetAge = function(){return this.age;};
+
+			var u2 = new User2('Bo');
+
+			var User3 = function(name, age){
+				this.name = name;
+				this.age = age;
+			};
+
+			User3.prototype = {
+				'GetName' : function(){
+					return this.name;
+				},
+				'GetAge' : function(){
+					return this.age;
+				}
+			};
+
+			var u3 = new User3('Al', 32);
+		</script>
+	</head>
+	<body>
+
+	</body>
+</html>

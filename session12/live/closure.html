@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Closure</title>
+		<meta charset="utf-8"/>
+		<script type="text/javascript">
+
+			var counter = function(num) {
+				var count = num;
+				return function() {
+					console.debug(count);
+					count++;
+				};
+			};
+
+			var count = counter(0);
+			count();
+			count();
+			count();
+			var count2 = counter(5);
+			count2();
+			count2();
+		</script>
+	</head>
+	<body>
+
+	</body>
+</html>
