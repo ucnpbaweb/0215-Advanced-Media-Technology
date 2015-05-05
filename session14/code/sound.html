@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Sound</title>
+		<meta charset="UTF-8"/>
+		<script type="text/javascript">
+			//polyfill for IE
+			(function () {
+				function CustomEvent ( event, params ) {
+					params = params || { bubbles: false, cancelable: false, detail: undefined };
+					var evt = document.createEvent( 'CustomEvent' );
+					evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+					return evt;
+				};
+
+				CustomEvent.prototype = window.CustomEvent.prototype;
+
+				window.CustomEvent = CustomEvent;
+			})();
+
+			var preload = [
+				{'type':Audio,'srcs':[
+					{'src':'sounds/gamejam_01.mp3', 'type':'audio/mpeg'},
+					{'src':'sounds/gamejam_01.ogg', 'type':'audio/ogg'}
+				],'id':'audio02'},
+				{'type':Audio,'srcs':[
+					{'src':'sounds/gamejam_07.mp3', 'type':'audio/mpeg'},
+					{'src':'sounds/gamejam_07.ogg', 'type':'audio/ogg'}
+				],'id':'audio01'},
+				{'type':Image,'src':'images/sprite01.png','id':'sprite01'}
+			];
+			var resources = {};
+
+			var preloaditemhandler = function(e){
+				resources[e.target.resouceId] = e.target;
+				//event for displaying the download progress
+				e.target.addEventListener('progress', progresshandler, false);
+				//if all are loded
+				if(Object.keys(resources).length == preload.length){
+					var ev = new CustomEvent('preload', {detail : {'message':'preload loaded'}});
+					document.dispatchEvent(ev);
+				}
+			};
+
+			var preloadhandler = function(e){
+				document.removeEventListener('preload', preloadhandler, false);
+				document.body.innerHTML = '<p>All resources loaded...</p>';
+				//play the sound audio01 for fun
+				//resources.audio01.volume = .5;
+				//resources.audio01.play();
+				//resources.audio01.loop = true;
+			};
+
+			var progresshandler = function(e){
+				//var part = Object.keys(resources).length / preload.length;
+				var total = 0;
+				Object.keys(resources).forEach(function(key){
+					var item = resources[key];
+					var progress = 1;
+					if(item.tagName == 'AUDIO'){
+						progress = item.buffered.end(0)/item.duration;
+					}
+					total += 1/preload.length * progress;
+				});
+				//console.debug(total);
+			};
+
+
+			var loadResources = function(){
+				document.addEventListener('preload', preloadhandler, false);
+				//start loading the resources
+				preload.forEach(function(item) {
+					var itemObj = new item.type();
+					itemObj.resouceId = item.id;
+					//set the event
+					var event = (itemObj.tagName == 'AUDIO') ? 'canplaythrough' : 'load';
+					itemObj.addEventListener(event, preloaditemhandler, false);
+					
+					//set the source
+					if(itemObj.tagName == 'AUDIO'){
+						//assume that the first source is ok
+						itemObj.src = item.srcs[0].src;
+						//find a better source
+						item.srcs.some(function(srcObj, i){
+							if(itemObj.canPlayType(srcObj.type) == 'probably'){
+								itemObj.src = srcObj.src;
+								return true;
+							}
+						});
+					} else {
+						itemObj.src = item.src;
+					}
+
+				});
+			};
+
+			window.addEventListener('load', function(){
+				//starting preload
+				loadResources();
+			}, false);
+		</script>
+	</head>
+	<body>
+
+	</body>
+</html>

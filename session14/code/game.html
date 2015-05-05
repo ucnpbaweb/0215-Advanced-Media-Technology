@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Game - Framework</title>
+		<meta charset="utf-8"/>
+		<style type="text/css">
+			html, body {margin: 0;}
+			#game {
+				position: relative;
+				margin: 0 auto;
+				width: 400px;
+				height: 500px;
+				border: solid black 1px;
+			}
+
+			#game .screen {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				z-index: 10;
+				display: none;
+				text-align: center;
+			}
+
+			#game .screen.active {
+				display: block;
+			}
+
+			#game .screen ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+		<script type="text/javascript">
+			var discs = {};
+			discs.preloaditems = [
+				{'type':Audio,'srcs':[
+					{'src':'sounds/gamejam_07.mp3', 'type':'audio/mpeg'},
+					{'src':'sounds/gamejam_07.ogg', 'type':'audio/ogg'}
+				],'id':'audio01'},
+				{'type':Image,'src':'images/sprite01.png','id':'sprite01'}
+			];
+			discs.resources = {};
+			discs.screens = {};
+			discs.settings = {
+				width : 400,
+				height : 400
+			};
+			//polyfill for IE
+			(function () {
+				function CustomEvent ( event, params ) {
+					params = params || { bubbles: false, cancelable: false, detail: undefined };
+					var evt = document.createEvent( 'CustomEvent' );
+					evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+					return evt;
+				};
+
+				CustomEvent.prototype = window.CustomEvent.prototype;
+
+				window.CustomEvent = CustomEvent;
+			})();
+
+		</script>
+		<script type="text/javascript" src="game_screens.js"></script>
+		<script type="text/javascript" src="game_board.js"></script>
+		<script type="text/javascript" src="game_preload.js"></script>
+		<script type="text/javascript">
+			window.addEventListener('load', function(){
+				discs.game.showScreen('splashscreen');
+			}, false);
+		</script>
+	</head>
+	<body>
+		<div id="game">
+			<div class="screen" id="splashscreen">
+				<h1>Discs</h1>
+				<p class="message">Preloading</p>
+				<progress id="preloadprogress" value="0" max="1"></progress>
+			</div>
+			<div class="screen" id="mainmenu">
+				<h2>Discs</h2>
+				<ul id="mainmenu">
+					<li><button name="gamescreen">Play</button></li>
+					<li><button name="highscore">Highscore</button></li>
+					<li><button name="aboutscreen">About</button></li>
+					<li><button name="exitscreen">Exit</button></li>
+				</ul>
+			</div>
+			<div class="screen" id="gamescreen">
+				<canvas id="board"></canvas>
+			</div>
+			<div class="screen" id="highscore">
+				<h2>Highscore</h2>
+			</div>
+			<div class="screen" id="aboutscreen">
+				<h2>About</h2>
+			</div>
+			<div class="screen" id="exitscreen">
+				<h2>Exit</h2>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,76 @@
+<html>
+	<head>
+		<title>Localstorage - List</title>
+		<meta charset="uft-8"/>
+		<script type="text/javascript">
+			var list;
+			var itemsListArr = [];
+
+			var addItemToList = function(str, i){
+				var li = document.createElement('li');
+				var span = document.createElement('span');
+				span.innerHTML = str;
+				li.appendChild(span);
+				var button = document.createElement('button');
+				button.textContent = 'Delete';
+				button.setAttribute('data-id', i);
+				li.appendChild(button);
+				list.appendChild(li);
+			};
+
+			var deleteItem = function(id){
+				itemsListArr.splice(id, 1);
+				localStorage['list'] = JSON.stringify(itemsListArr);
+				list.innerHTML = '';
+				itemsListArr.forEach(addItemToList);
+			};
+
+			window.addEventListener('load', function(){
+				list = document.getElementById('list');
+
+				list.addEventListener('click', function(e){
+					console.debug(e);
+					switch(e.target.tagName){
+						case 'BUTTON':
+							var id = e.target.getAttribute('data-id');
+							deleteItem(id);
+							break;
+					}
+				}, false);
+
+				if(localStorage.list){
+					itemsListArr = JSON.parse(localStorage.list);
+					itemsListArr.forEach(addItemToList);
+				}
+
+				document.forms.newitem.addEventListener('submit', function(e){
+					e.preventDefault();
+					var item = e.target.item.value;
+					addItemToList(item, itemsListArr.length);
+					itemsListArr.push(item);
+					localStorage['list'] = JSON.stringify(itemsListArr);
+					
+					e.target.reset();
+				}, false);
+
+				document.forms.clear.addEventListener('submit', function(e){
+					e.preventDefault();
+					itemsListArr = [];
+					localStorage.clear();
+					list.innerHTML = '';
+				}, false);
+
+			}, false);
+		</script>
+	</head>
+	<body>
+		<ul id="list"></ul>
+		<form name="newitem">
+			<input type="text" name="item"/>
+			<button>Insert item</button>
+		</form>
+		<form name="clear">
+			<button>Clear list</button>
+		</form>
+	</body>
+</html>

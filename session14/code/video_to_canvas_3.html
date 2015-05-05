@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Video to canvas</title>
+		<style>
+			body {
+				width: 600px;
+				margin: 0 auto;
+				font-family: sans-serif;
+				position: relative;
+			}
+			
+			div.canvascontainer {
+				position: relative;
+			}
+			
+			div.tile {
+				float: left;
+			}
+		</style>
+		<script>
+			var video, canvasTimer, canvasContainer, dragSrcEl;
+			var board = {h:4,v:3,arr:[],tile:{w:0,h:0}};
+			var mousePos = {x:0,y:0,move:false,offsetX:0,offsetY:0};
+			
+			var snap = function(e) {
+				for(var i = 0; i < board.arr.length; i++){
+					var canvas = board.arr[i];
+					canvas.ctx.fillRect(0, 0, board.tile.w, board.tile.h);
+					canvas.ctx.drawImage(video, board.tile.w*canvas.x, board.tile.h*canvas.y, board.tile.w, board.tile.h, 0, 0, board.tile.w, board.tile.h);
+				}
+			};
+			
+			var setCanvas = function(){
+				var width = parseInt(video.videoWidth/board.h, 10);
+				var height = parseInt(video.videoHeight/board.v, 10);
+				canvasContainer.style.width = video.videoWidth+'px';
+				canvasContainer.style.height = video.videoHeight+'px';
+				board.tile.w = width;
+				board.tile.h = height;
+				var posnum = 0;
+				for(var i = 0; i < board.v; i++){
+					for(var j = 0; j < board.h; j++){
+						var newDiv = document.createElement('div');
+						newDiv.className = 'tile';
+						newDiv.style.width = width+'px';
+						newDiv.style.height = height+'px';
+						var newCanvas = document.createElement('canvas');
+						newCanvas.setAttribute('data-num', posnum);
+						posnum++;
+						newCanvas.setAttribute('draggable', 'true');
+						newCanvas.width = width;
+						newCanvas.height = height;
+						newCanvas.className = 'tile';
+						newCanvas.addEventListener('dragstart', dragstart, false);
+						newCanvas.addEventListener('dragover', dragover, false);
+						newCanvas.addEventListener('drop', dragdrop, false);
+						var ctx = newCanvas.getContext('2d');
+						board.arr.push({x:j,y:i,ctx:ctx});
+						newDiv.appendChild(newCanvas);
+						if(canvasContainer.children.length > 0){
+							var num = Math.round((canvasContainer.children.length-1)*Math.random());
+							canvasContainer.insertBefore(newDiv, canvasContainer.children[num]);
+						}else{
+							canvasContainer.appendChild(newDiv);
+						}
+					}
+				}
+			};
+			
+			var posOk = function(){
+				inplace = false;
+				for(var i = 0; i < canvasContainer.children.length; i++){
+					var canvas = canvasContainer.children[i].firstChild;
+					if(i == canvasContainer.children.length-1){
+						inplace = true;
+					}
+					if(i != parseInt(canvas.getAttribute('data-num'))){
+						i = canvasContainer.children.length;
+					}
+				}
+				if(inplace)
+					video.pause();
+			};
+			
+			var dragstart = function(e){
+				dragSrcEl = this;
+				e.dataTransfer.effectAllowed = 'move';
+				e.dataTransfer.setData('text/html', this.outerHTML);
+			};
+			
+			var dragover = function(e) {
+				if (e.preventDefault) {
+					e.preventDefault();
+				}
+				e.dataTransfer.dropEffect = 'move';
+				return false;
+			}
+			
+			var dragdrop = function(e) {
+				if (e.stopPropagation) {
+					e.stopPropagation();
+				}
+				if (dragSrcEl != this) {
+					var thisParent = this.parentElement;
+					dragSrcEl.parentElement.appendChild(this);
+					thisParent.appendChild(dragSrcEl);
+				}
+				posOk();
+				return false;
+			}
+			
+			var setPosition = function(e){
+				if(mousePos.move){
+					var rect = e.target.getBoundingClientRect();
+					mousePos.x =  e.clientX - rect.left - mousePos.offsetX;
+					mousePos.y = e.clientY - rect.top - mousePos.offsetY;
+				}
+			};
+			
+			var startMove = function(e){
+				var rect = e.target.getBoundingClientRect();
+				mousePos.offsetX = e.clientX - rect.left - mousePos.x;
+				mousePos.offsetY = e.clientY - rect.top - mousePos.y;
+				mousePos.move = true;
+			};
+			
+			window.addEventListener('loadedmetadata', function(e) {
+				if(video){
+					setCanvas();
+				}
+			}, true);
+			
+			window.addEventListener('load', function(){
+				video = document.querySelector('video');
+				canvasContainer = document.querySelector('#canvascontainer');
+				if(video.readyState > 0){
+					setCanvas();
+				}
+				document.querySelector('button#play').addEventListener('click', function(){
+					video.play();
+				}, false);
+				canvasTimer = window.setInterval(snap, 50);
+			}, false);
+			
+			
+		</script>
+	</head>
+	<body>
+		<h1>Video to canvas</h1>
+		<p>After reading <a href="http://dev.opera.com/articles/view/consistent-event-firing-with-html5-video/">Consistent event firing with HTML5 video</a> it is clear that loadedmetadata must be handeled before the document is loaded.</p>
+		<p>To start the video press <q>Play</q>, to stop the video solve the pussle.</p>
+		<button id="play">Play</button>
+		<video style="display:none">
+			<source src="video/TheNewSpirit.ogg" type="video/ogg"/>
+			<source src="video/TheNewSpirit.mp4" type="video/mp4"/>
+		</video>
+		<div id="canvascontainer"></div>
+	</body>
+</html>

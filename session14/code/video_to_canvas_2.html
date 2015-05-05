@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Video to canvas</title>
+		<style>
+			body {
+				width: 600px;
+				margin: 0 auto;
+				font-family: sans-serif;
+			}
+			canvas {
+				border: 1px solid black;
+			}
+		</style>
+		<script>
+			var video, canvas, ctx, canvasTimer;
+			var mousePos = {x:0,y:0,move:false,offsetX:0,offsetY:0};
+			
+			var snap = function(e) {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.drawImage(video, mousePos.x, mousePos.y, video.videoWidth/2, video.videoHeight/2);
+			};
+			
+			var setCanvasSize = function(){
+				var ratio = video.videoWidth/video.videoHeight;
+				var w = video.videoWidth*2;
+				var h = parseInt(w/ratio, 10);
+				canvas.width = w;
+				canvas.height = h;
+			};
+			
+			var setPosition = function(e){
+				if(mousePos.move){
+					var rect = e.target.getBoundingClientRect();
+					mousePos.x =  e.clientX - rect.left - mousePos.offsetX;
+					mousePos.y = e.clientY - rect.top - mousePos.offsetY;
+				}
+			};
+			
+			var startMove = function(e){
+				var rect = e.target.getBoundingClientRect();
+				mousePos.offsetX = e.clientX - rect.left - mousePos.x;
+				mousePos.offsetY = e.clientY - rect.top - mousePos.y;
+				mousePos.move = true;
+			};
+			
+			window.addEventListener('loadedmetadata', function(e) {
+				if(canvas && video){
+					setCanvasSize();
+				}
+			}, true);
+			
+			window.addEventListener('load', function(){
+				video = document.querySelector('video');
+				canvas = document.querySelector('canvas');
+				if(canvas.getContext){
+					if(video.readyState > 0){
+						setCanvasSize();
+					}
+					ctx = canvas.getContext('2d');
+				}
+				canvas.addEventListener('mousedown', startMove, false);
+				canvas.addEventListener('mouseup', function(){mousePos.move = false;}, false);
+				canvas.addEventListener('mousemove', setPosition, false);
+				document.querySelector('button#play').addEventListener('click', function(){
+					video.play();
+				}, false);
+				canvasTimer = window.setInterval(snap, 50);
+			}, false);
+			
+			
+		</script>
+	</head>
+	<body>
+		<h1>Video to canvas</h1>
+		<p>After reading <a href="http://dev.opera.com/articles/view/consistent-event-firing-with-html5-video/">Consistent event firing with HTML5 video</a> it is clear that loadedmetadata must be handeled before the document is loaded.</p>
+		<p>Use the mouse to drag around the <q>video</q>.</p>
+		<button id="play">Play</button>
+		<video style="display:none">
+			<source src="video/TheNewSpirit.ogg" type="video/ogg"/>
+			<source src="video/TheNewSpirit.mp4" type="video/mp4"/>
+		</video>
+		<canvas></canvas>
+	</body>
+</html>

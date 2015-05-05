@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Video to canvas</title>
+		<style>
+			body {
+				width: 600px;
+				margin: 0 auto;
+				font-family: sans-serif;
+			}
+		</style>
+		<script>
+			var snapBtn, video, canvas, ctx;
+			
+			var snap = function() {
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+			};
+			
+			var setCanvasSize = function(){
+				var ratio = video.videoWidth / video.videoHeight;
+				var w = video.videoWidth/2;
+				var h = parseInt(w / ratio, 10);
+				canvas.width = w;
+				canvas.height = h;
+			};
+			
+			window.addEventListener('loadedmetadata', function(e) {
+				var videoElm = e.target;
+				if(videoElm.id  == 'video1'){
+					if(canvas && video){
+						setCanvasSize();
+					}
+				}
+			}, true);
+			
+			window.addEventListener('load', function(){
+				video = document.querySelector('video');
+				canvas = document.querySelector('canvas');
+				snapBtn = document.querySelector('button');
+				if(canvas.getContext){
+					if(video.readyState > 0){
+						setCanvasSize();
+					}
+					ctx = canvas.getContext('2d');
+				}
+				
+				snapBtn.addEventListener('click', snap, false);
+			}, false);
+			
+			
+		</script>
+	</head>
+	<body>
+		<h1>Video to canvas</h1>
+		<p>After reading <a href="http://dev.opera.com/articles/view/consistent-event-firing-with-html5-video/">Consistent event firing with HTML5 video</a> it is clear that loadedmetadata must be handeled before the document is loaded.</p>
+		<video id="video1" controls="controls">
+			<source src="video/TheNewSpirit.ogg" type="video/ogg"/>
+			<source src="video/TheNewSpirit.mp4" type="video/mp4"/>
+		</video>
+		<button>Snap</button>
+		<canvas></canvas>
+	</body>
+</html>

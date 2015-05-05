@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>canvas and image</title>
+    <meta charset="UTF-8"/>
+    <script>
+      var canvas, ctx, img;
+
+      var loadImg = function(e){
+        img = e.target;
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        if (document.forms.imgselect.method.value) {
+          method[document.forms.imgselect.method.value]();
+        }
+      };
+
+      var method = [];
+
+      method.bw = function() {
+        var pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < pixelData.data.length; i+=4 ) {
+          var r = pixelData.data[i];
+          var g = pixelData.data[i+1];
+          var b = pixelData.data[i+2];
+
+          var averageColour = (r + g + b) / 3;
+          pixelData.data[i] = averageColour;
+          pixelData.data[i+1] = averageColour;
+          pixelData.data[i+2] = averageColour;
+        }
+        ctx.putImageData(pixelData, 0, 0);
+      };
+
+      method.transp = function() {
+        var pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < pixelData.data.length; i+=4 ) {
+          // set the transparency with the same value as the green color
+          pixelData.data[i+3] = pixelData.data[i+1];
+        }
+        ctx.putImageData(pixelData, 0, 0);
+      };
+
+      method.transp2 = function() {
+        var pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < pixelData.data.length; i+=4 ) {
+          var r = pixelData.data[i];
+          var g = pixelData.data[i+1];
+          var b = pixelData.data[i+2];
+          // set the transparency with the reversed color of the blue color multiplied by 2
+          pixelData.data[i+3] = 255-(b*2);
+        }
+        ctx.putImageData(pixelData, 0, 0);
+      };
+
+      method.transp3 = function() {
+        var pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < pixelData.data.length; i+=4 ) {
+
+          var r = pixelData.data[i];
+          var g = pixelData.data[i+1];
+          var b = pixelData.data[i+2];
+          
+          var averageColour = (r + g + b) / 3;
+          pixelData.data[i] = 255;
+          pixelData.data[i+1] = 255;
+          pixelData.data[i+2] = 0;
+          pixelData.data[i+3] = 255 - averageColour;
+        }
+        ctx.putImageData(pixelData, 0, 0);
+      };
+
+      window.addEventListener('load', function(){
+        canvas = document.querySelector('#canvas');
+        img = new Image();
+        img.addEventListener('load', loadImg, false);
+        if (canvas.getContext) {
+          ctx = canvas.getContext('2d');
+        }
+
+        if(document.forms.imgselect.img.value){
+          img.src = document.forms.imgselect.img.value;
+        }
+
+        document.forms.imgselect.img.addEventListener('change', function(e){
+          if(e.target.value){
+            img.src = e.target.value;
+          }
+        }, false);
+
+        document.forms.imgselect.method.addEventListener('change', function(e){
+            if (e.target.value && img.width) {
+              ctx.drawImage(img, 0, 0);
+              method[e.target.value]();
+            }
+        }, false);
+
+        //change the background
+        document.forms.background.color.addEventListener('change', function(e){
+          var value = e.target.value;
+          console.debug(e);
+          document.body.style.backgroundColor = value;
+        });
+      }, false);
+    </script>
+  </head>
+  <body>
+    <form name="imgselect">
+      <select name="img">
+        <option value="">Select an image</option>
+        <option value="images/canva_image_boat.jpg">canva_image_boat.jpg</option>
+        <option value="images/5108.jpg">5108.jpg</option>
+      </select>
+      <select name="method">
+        <option value="">Select the coloring of the image</option>
+        <option value="bw">Black/white</option>
+        <option value="transp">Partly transparent</option>
+        <option value="transp2">Partly transparent 2</option>
+        <option value="transp3">Partly transparent 3</option>
+      </select>
+    </form>
+    <canvas id="canvas"></canvas>
+    <form name="background">
+      <input type="color" name="color" value="#ffffff" />
+    </form>
+  </body>
+</html>
